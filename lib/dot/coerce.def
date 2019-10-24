@@ -28,10 +28,12 @@
     {{? $type == 'string' }}
       if ({{=$dataType}} == 'number' || {{=$dataType}} == 'boolean')
         {{=$coerced}} = '' + {{=$data}};
+      {{? it.opts.coerceNulls }}
       else if ({{=$data}} === null) {{=$coerced}} = '';
+      {{?}}
     {{?? $type == 'number' || $type == 'integer' }}
-      if ({{=$dataType}} == 'boolean' || {{=$data}} === null
-          || ({{=$dataType}} == 'string' && {{=$data}} && {{=$data}} == +{{=$data}}
+      if ({{? it.opts.coerceNulls }}{{=$data}} === null ||{{?}}
+          ({{=$dataType}} == 'string' && {{=$data}} && {{=$data}} == +{{=$data}}
           {{? $type == 'integer' }} && !({{=$data}} % 1){{?}}))
         {{=$coerced}} = +{{=$data}};
     {{?? $type == 'boolean' }}
@@ -39,7 +41,7 @@
         {{=$coerced}} = false;
       else if ({{=$data}} === 'true' || {{=$data}} === 1)
         {{=$coerced}} = true;
-    {{?? $type == 'null' }}
+    {{?? $type == 'null' && it.opts.coerceNulls }}
       if ({{=$data}} === '' || {{=$data}} === 0 || {{=$data}} === false)
         {{=$coerced}} = null;
     {{?? it.opts.coerceTypes == 'array' && $type == 'array' }}
